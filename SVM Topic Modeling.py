@@ -27,10 +27,10 @@
 # In[ ]:
 
 
-* Known positive words in the topic (whitelisting words)
-* Known positive entities (whitelisting entities)
-* Known negative words (blacklisting words)
-* Known negative entities (blacklisting entities)
+#* Known positive words in the topic (whitelisting words)
+#* Known positive entities (whitelisting entities)
+#* Known negative words (blacklisting words)
+#* Known negative entities (blacklisting entities)
 
 
 # In[ ]:
