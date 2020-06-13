@@ -1,0 +1,83 @@
+---
+title: "Mind Map: Text Extraction in Python, R, and Julia"
+author: "Stefan Wojcik and Adam Hughes"
+date: "`r format(Sys.Date())`"
+output: 
+  ioslides_presentation:
+      logo: imgs/Twitter_Logo_Blue.png
+  css: "newstyle.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning =  FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(srvyr)
+```
+
+## Identifying Political News
+
+- Our goal: extract one important topic of interest in a corpus of text
+
+### Challenges
+- How to accurately classify political news without human coders?
+
+- How to validate the accuracy of the classifier without ground truth?
+
+
+## Methodology: Isolating Political News
+
+1. A set of ‘seed’ words that we know are about the topic. 
+2. Apply positive label to any documents containing those words and coming from known sources
+3. Run a machine learning model to uncover the patterns of words corresponding to the positive examples
+4. Extrapolate the model to the entire dataset to label everything
+
+## Example: A Mind Map
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri("imgs/mind_map.png"), 
+               width = 600)
+```
+
+
+## URLS/Tweets Data
+
+- Limit analysis to the last 21 days
+- 837,932 links to known misinfo domains (in EN)
+- 894,938 links to any site (random tweets in EN containing a URL)
+
+
+## Methodology: Validation
+```{r, echo=F}
+recall = data_frame(Fragment = c("politi", "usnews", "world", "national", 
+                             "state", "elect", "vote", "govern", "campaign", 
+                             "war", "polic", "econ", "unemploy", "racis", 
+                             "energy", "abortion", "educa", "healthcare", "immigration"), 
+                Recall = c(.96, .45, .79, .85, .84, .85, .95, .98, 
+                           .95, .98, .96, .88, .94, .95, .86, .98, .82, 
+                           .84, .97), 
+                Base_rate = c(.01, .0, .01, .01, .01, .01, .01, 0.0, 0.0, 0.0, 0.0, 
+                              .01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+recall$Fragment = factor(recall$Fragment, levels = recall$Fragment[order(recall$Recall)])
+qplot(data=recall, y=Fragment, x=Recall)
+```
+- Results: >95% accurate on test set
+
+## Results: Political shares by type of link
+**About 20%** of random URLs are about politics
+**About 80%** of misinformation URLS were about politics
+
+## Results: Political misinfo over time
+**Over time patterns of political misinfo tend to match trends of politics**
+```{r, echo=F}
+htmltools::img(src = knitr::image_uri("imgs/misinfo_over_time.png"), 
+               width = 600)
+```
+
+
+## THANK YOU!
