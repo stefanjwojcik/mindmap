@@ -21,28 +21,51 @@ library(knitr)
 library(srvyr)
 ```
 
-## Identifying Political News
+## Motivating Example: Identifying Political News
 
 - Our goal: extract one important topic of interest in a corpus of text
 
-### Challenges
-- How to accurately classify political news without human coders?
 
-- How to validate the accuracy of the classifier without ground truth?
+## Standard Approaches
+ - Classic topic-modeling seeks to find the topics that lie within a set of documents
+ - Its core assumption is that words are more likely to occur in certain topics relative to others
+
+## Problems with Classic Topic Modeling for Certain Tasks
+
+- It can fail to identify a specific topic of interest, like immigration, without additional effort
+- It can be hard to decide the level of generality of the topics you want in advance (e.g. general topics versus subtopics). 
+- Finally, it often involves lots of manual `tuning’, raising questions about researcher discretion and reproducibility
+
+## Alternative for certain problems
+
+- But there is a method that may complement this classic technique in certain situations. 
+- It has been used in scientific journals to isolate topics of interest (most prominently Bakshy and Messing)
+
+## The 'Mind Map'
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri("imgs/mind_map.png"), 
+               width = 600)
+```
 
 
-## Methodology: Isolating Political News
+## Algorithm
 
 1. A set of ‘seed’ words that we know are about the topic. 
 2. Apply positive label to any documents containing those words and coming from known sources
 3. Run a machine learning model to uncover the patterns of words corresponding to the positive examples
 4. Extrapolate the model to the entire dataset to label everything
 
-## Example: A Mind Map
-```{r, echo=FALSE}
-htmltools::img(src = knitr::image_uri("imgs/mind_map.png"), 
-               width = 600)
-```
+## Validation
+
+1. Remove one of the seed words from the seed set
+2. Assign positive labels only to documents containing that word 
+3. Evaluate how well a model can recover the removed word with the remaining seed set
+4. Rinse and repeat until all words are evaluated. 
+
+## Example 1: Isolating Political News
+- How to accurately classify political news without human coders?
+
+- How to validate the accuracy of the classifier without ground truth?
 
 
 ## URLS/Tweets Data
@@ -52,7 +75,7 @@ htmltools::img(src = knitr::image_uri("imgs/mind_map.png"),
 - 894,938 links to any site (random tweets in EN containing a URL)
 
 
-## Methodology: Validation
+## Political words: Validation
 ```{r, echo=F}
 recall = data_frame(Fragment = c("politi", "usnews", "world", "national", 
                              "state", "elect", "vote", "govern", "campaign", 
