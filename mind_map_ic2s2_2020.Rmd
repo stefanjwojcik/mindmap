@@ -1,5 +1,5 @@
 ---
-title: "Mind Map: Text Extraction in Python, R, and Julia"
+title: "Mind Map: Semi-Supervised Topic Extraction"
 author: "Stefan Wojcik and Adam Hughes"
 date: "`r format(Sys.Date())`"
 output: 
@@ -21,25 +21,27 @@ library(knitr)
 library(srvyr)
 ```
 
-## Motivating Example: Identifying Political News
+## Motivation
+- No best practices for *classifying* topics within corpora
+- Our goal: extract one or more predefined topics of interest
+- Improve upon dictionary methods while preserving their efficiency 
 
-- Our goal: extract one important topic of interest in a corpus of text
 
+## Dictionary approaches
+ - Use an off-the-shelf lists of words that signify a concept of interest
+ - Domain-sensitive and have may low reliability ([Barbera et al 2020](https://www.cambridge.org/core/journals/political-analysis/article/automated-text-classification-of-news-articles-a-practical-guide/10462DB284B1CD80C0FAE796AD786BC6), [Frimer 2019](http://www.jeremyfrimer.com/uploads/2/1/2/7/21278832/frimer__2019__jrp_.pdf))
+ - Efficient but don't use any information from the corpus being analyzed
 
-## Standard Approaches
- - Classic topic-modeling seeks to find the topics that lie within a set of documents
- - Its core assumption is that words are more likely to occur in certain topics relative to others
+## Traditional Topic Modeling
+- Method of dimensionality reduction: assumes that words are more likely to occur in certain topics relative to others
+- Cannot select topic of interest at the outset
+- Cannot predefine the level of generality (e.g. general topics versus subtopics). 
+- Involves lots of manual 'tuning,' raising questions about researcher discretion and reproducibility
 
-## Problems with Classic Topic Modeling for Certain Tasks
+## An Alternative 
 
-- It can fail to identify a specific topic of interest, like immigration, without additional effort
-- It can be hard to decide the level of generality of the topics you want in advance (e.g. general topics versus subtopics). 
-- Finally, it often involves lots of manual `tuning’, raising questions about researcher discretion and reproducibility
-
-## Alternative for certain problems
-
-- But there is a method that may complement this classic technique in certain situations. 
-- It has been used in scientific journals to isolate topics of interest (most prominently Bakshy and Messing)
+- Draw upon elements of dictionary methods and topic models via semi-supervised classification
+- First used in [Bakshy, Messing, Adamic 2015](https://science.sciencemag.org/content/348/6239/1130.abstract)
 
 ## The 'Mind Map'
 ```{r, echo=FALSE}
@@ -50,21 +52,20 @@ htmltools::img(src = knitr::image_uri("imgs/mind_map.png"),
 
 ## Algorithm
 
-1. A set of ‘seed’ words that we know are about the topic. 
-2. Apply positive label to any documents containing those words and coming from known sources
-3. Run a machine learning model to uncover the patterns of words corresponding to the positive examples
-4. Extrapolate the model to the entire dataset to label everything
+1. A set of 'seed' words that we know are about the topic. 
+2. Apply positive label to any documents containing those words <!-- and coming from known sources NB - this part is unclear to me-->
+3. Estimate a machine classification model to identify other words that co-occur with positive examples
+4. Extrapolate the model to the entire dataset 
 
 ## Validation
 
 1. Remove one of the seed words from the seed set
-2. Assign positive labels only to documents containing that word 
+2. Assign positive labels only to documents containing that word <!-- unclear to me -->
 3. Evaluate how well a model can recover the removed word with the remaining seed set
 4. Rinse and repeat until all words are evaluated. 
 
 ## Example 1: Isolating Political News
 - How to accurately classify political news without human coders?
-
 - How to validate the accuracy of the classifier without ground truth?
 
 
@@ -92,15 +93,34 @@ qplot(data=recall, y=Fragment, x=Recall)
 - Results: >95% accurate on test set
 
 ## Results: Political shares by type of link
+
 **About 20%** of random URLs are about politics
+
 **About 80%** of misinformation URLS were about politics
 
 ## Results: Political misinfo over time
 **Over time patterns of political misinfo tend to match trends of politics**
+
 ```{r, echo=F}
 htmltools::img(src = knitr::image_uri("imgs/misinfo_over_time.png"), 
                width = 600)
 ```
 
+## Example 2: Classifying News into Subtopics
+- Focus on sub-types of news content: economy, entertainment, immigration, sports 
+- Supplement image analysis of who appears in different types of news photos
+
+## Results of Main Analysis by Subtopics
+```{r, echo=F}
+htmltools::img(src = knitr::image_uri("imgs/pew_results.png"), 
+               width = 600)
+```
+
+
+## Validation of Subtopic Classification
+```{r, echo=F}
+htmltools::img(src = knitr::image_uri("imgs/pew_validation.png"), 
+               width = 600)
+```
 
 ## THANK YOU!
